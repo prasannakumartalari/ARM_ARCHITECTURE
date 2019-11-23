@@ -77,14 +77,14 @@ __and      FUNCTION
 		 VADD.F32 s16,s16,s15; sum of weigthed inputs 
 		 VMOV.F32 s2,s16;
 		 BL __sigmoid;
-		 VCVTR.S32.F32 s24,s8;
+		 VCVTR.S32.F32 s24,s8; in every function output s8 is converted and stored in s24 which is final output 
 		 VMOV.F32 r0,s21;input1
 		 BL printMsg
 		 VMOV.F32 r0,s22;input2
 		 BL printMsg
 		 VMOV.F32 r0,s23;input3
 		 BL printMsg
-		 VMOV.F32 r0,s24;output3
+		 VMOV.F32 r0,s24;output3 
 		 BL printMsg
 		 BL printNewLine
 		 MOV r14,r5
