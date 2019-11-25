@@ -179,7 +179,7 @@ __nand      FUNCTION
 		VLDR.F32 s12, = -1.0 ; w0
 		VLDR.F32 s13, =-1.0; w1
 		VLDR.F32 s14, =-1.0 ; w2
-		VLDR.F32 s15, =4.0;bias
+		VLDR.F32 s15, =3.0;bias
 		
 		
 		VCVTR.S32.F32 s21,s9;
@@ -364,9 +364,16 @@ __xor      FUNCTION
 			; xnor function
  EXPORT __xnor
 __xnor      FUNCTION	
-		MOV r5,r14
+		
 		; we use demorgans law here ~(a+b)=~a.~b;
 		; same way as xor gate but in  choosing terms we do negation of each term and inplace of or we use and gate 
+		;x1 of intermediate  layer 
+		MOV r5,r14
+		; we implemnted xor gate as abc+a*~b*~c+b*~a~c+c*~a*~c;
+		; above  four terms  are intermediate layer terms and final output is caluclated by  doing or of four terms 
+		; for this we use multi layer  perceptrons 
+		;reference for multi layer  perceptrons 
+		;https://towardsdatascience.com/implementing-the-xor-gate-using-backpropagation-in-neural-networks-c1f255b4f20d
 		;x1 of intermediate  layer 
 		VLDR.F32 s12, = -2.0 ; w0
 		VLDR.F32 s13, =2.0; w1
@@ -392,7 +399,7 @@ __xnor      FUNCTION
 		 VCVTR.S32.F32 s25,s8
 		 VCVT.F32.S32 s25,s25
 		 
-		 ; weights of and gate s11 s12 s13 s14(bias); 
+		
 		;x2 of intermediate  layer 
 		VLDR.F32 s12, = 2.0 ; w0
 		VLDR.F32 s13, =-2.0; w1
@@ -419,7 +426,7 @@ __xnor      FUNCTION
 		 VCVT.F32.S32 s26,s26
 		 
 		 
-		 ; weights of and gate s11 s12 s13 s14(bias); 
+		 ; weights of and gate s12 s13 s15 s15(biased wieight ); 
 		;x3 of intermediate  layer 
 		VLDR.F32 s12, = 2.0 ; w0
 		VLDR.F32 s13, =2.0; w1
@@ -472,23 +479,24 @@ __xnor      FUNCTION
 		 VCVT.F32.S32 s28,s28
 		 		 ; weights of and gate s11 s12 s13 s14(bias); 
 		;output  
-		VLDR.F32 s12, = 2.0 ; w0
-		VLDR.F32 s13, = 2.0; w1
-		VLDR.F32 s14, = 2.0 ; w2
-		VLDR.F32 s17, = 2.0 ; w2
-		VLDR.F32 s15, = -7.0;weight bias
+		VLDR.F32 s12, = 2.0 ; 
+		VLDR.F32 s13, = 2.0; 
+		VLDR.F32 s14, = 2.0 ; 
+		VLDR.F32 s17, = 2.0 ; 
+		VLDR.F32 s15, = -7.0;
 		
 		 VMUL.F32 s12,s12,s25;
 		 VMUL.F32 s13,s13,s26;
 		 VMUL.F32 s14,s14,s27;
 		 VMUL.F32 s17,s17,s28; note  s20 is bias 1.0
-		 VMUL.F32 s15,s15,s20;
+		 VMUL.F32 s15,s15,s20;w5*bias
 		 
 		 
 		 VADD.F32 s16,s12,s13;
 		 VADD.F32 s16,s16,s14;
 		 VADD.F32 s16,s16,s17;
 		 VADD.F32 s16,s16,s15;
+		 
 		 VMOV.F32 s2,s16;
 		 BL __sigmoid;
 		 VCVTR.S32.F32 s24,s8;
